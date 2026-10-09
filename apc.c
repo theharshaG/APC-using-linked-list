@@ -4,7 +4,14 @@
 
 status check_operands(char *argv)
 {
-    for(int i = 0; argv[i]; i++)
+    int i=0;
+    if(argv[0] == '-')
+        i = 1;
+
+    if(argv[i] == '\0')
+        return failure;
+
+    for( ;argv[i]; i++)
     {
         if(!(argv[i] >= '0' && argv[i] <= '9'))
         {
