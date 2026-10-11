@@ -156,9 +156,12 @@ int main(int argc, char *argv[])
 
         case 'x':
         case 'X':
-            printf("Multiplication not implemented yet\n");
-            return 0;
-
+            if((multiplication(tail1,tail2,&headR,&tailR)==failure))
+            {
+                printf("multiplication failed!\n");
+                return 0;
+            }
+            break;
         case '/':
             printf("Division not implemented yet\n");
             return 0;

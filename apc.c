@@ -25,7 +25,7 @@ status check_operands(char *argv)
 status check_operator(char *argv)
 {
     if(argv[0] == '+' || argv[0] == '-' ||
-       argv[0] == '*' || argv[0] == '/')
+       argv[0] == 'x' || argv[0] == 'X' ||argv[0]=='/' )
     {
         return success;
     }
