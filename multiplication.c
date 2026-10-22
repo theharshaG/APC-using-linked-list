@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include "apc.h"
 
-status multiplication(Dlist *tail1, Dlist *tail2,
-                      Dlist **headR, Dlist **tailR)
+status multiplication(Dlist *tail1, Dlist *tail2,Dlist **headR, Dlist **tailR)
 {
     if (tail1 == NULL || tail2 == NULL ||
         headR == NULL || tailR == NULL)

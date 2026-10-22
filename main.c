@@ -162,9 +162,15 @@ int main(int argc, char *argv[])
                 return 0;
             }
             break;
+            
         case '/':
-            printf("Division not implemented yet\n");
-            return 0;
+            
+            if((division(head1, head2, &headR, &tailR)==failure))
+            {
+                printf("Divition failed!\n");
+                return 0;
+            }
+            break;
 
         default:
             printf("Invalid operator\n");

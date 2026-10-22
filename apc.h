@@ -23,6 +23,7 @@ status insert_first(Dlist **head, Dlist **tail, int data);
 status subs(Dlist *tail1,Dlist *tail2,Dlist **headR, Dlist **tailR);
 int compare_lists(Dlist *head1, Dlist *head2);
 status multiplication(Dlist *tail1, Dlist *tail2,Dlist **headR, Dlist **tailR);
+status division(Dlist *head1, Dlist *head2,Dlist **headR, Dlist **tailR);
 
 
 
