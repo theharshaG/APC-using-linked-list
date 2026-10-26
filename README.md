@@ -36,7 +36,6 @@ APC/
 ├── addition.c
 ├── subs.c
 ├── multiplication.c
-├── compare.c
 ├── digit_to_list.c
 ├── division.c
 ├── Makefile

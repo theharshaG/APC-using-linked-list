@@ -3,8 +3,8 @@
 
 all: a.out
 
-a.out: main.o add.o sub.o multiplication.o apc.o compare.o digit_to_list.o divition.o
-	gcc main.o add.o sub.o multiplication.o apc.o compare.o digit_to_list.o divition.o -o a.out
+a.out: main.o add.o sub.o multiplication.o apc.o digit_to_list.o divition.o
+	gcc main.o add.o sub.o multiplication.o apc.o digit_to_list.o divition.o -o a.out
 
 main.o: main.c apc.h
 	gcc -c main.c -o main.o
@@ -20,9 +20,6 @@ multiplication.o: multiplication.c apc.h
 
 apc.o: apc.c apc.h
 	gcc -c apc.c -o apc.o
-
-compare.o: compare.c apc.h
-	gcc -c compare.c -o compare.o
 
 digit_to_list.o: digit_to_list.c apc.h
 	gcc -c digit_to_list.c -o digit_to_list.o
