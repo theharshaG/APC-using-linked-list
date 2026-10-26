@@ -1,47 +1,48 @@
-#include <stdio.h>
 #include "apc.h"
 
-status subs(Dlist *tail1, Dlist *tail2, Dlist **headR, Dlist **tailR)
+int subtraction(Dlist **head1, Dlist **tail1,
+				Dlist **head2, Dlist **tail2,
+				Dlist **headR, Dlist **tailR)
 {
-    Dlist *temp1 = tail1;
-    Dlist *temp2 = tail2;
+	Dlist *temp1 = *tail1;
+	Dlist *temp2 = *tail2;
 
-    int borrow = 0;
+	int borrow = 0;
+	int diff;
 
-    while (temp1 != NULL)
-    {
-        int num1 = temp1->data - borrow;
-        int num2 = 0;
+	while (temp1 || temp2)
+	{
+		int num1 = 0;
+		int num2 = 0;
 
-        if (temp2 != NULL)
-        {
-            num2 = temp2->data;
-        }
+		if (temp1)
+		{
+			num1 = temp1->data;
+			temp1 = temp1->prev;
+		}
 
-        if (num1 < num2)
-        {
-            num1 = num1 + 10;
-            borrow = 1;
-        }
-        else
-        {
-            borrow = 0;
-        }
+		if (temp2)
+		{
+			num2 = temp2->data;
+			temp2 = temp2->prev;
+		}
 
-        int res = num1 - num2;
+		diff = num1 - borrow - num2;
 
-        if (insert_first(headR, tailR, res) == failure)
-        {
-            return failure;
-        }
+		if (diff < 0)
+		{
+			diff = diff + 10;
+			borrow = 1;
+		}
+		else
+		{
+			borrow = 0;
+		}
 
-        temp1 = temp1->prev;
+		insert_first(headR, tailR, diff);
+	}
 
-        if (temp2 != NULL)
-        {
-            temp2 = temp2->prev;
-        }
-    }
+	remove_leading_zeros(headR, tailR);
 
-    return success;
+	return SUCCESS;
 }

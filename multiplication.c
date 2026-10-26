@@ -1,91 +1,63 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "apc.h"
 
-status multiplication(Dlist *tail1, Dlist *tail2,Dlist **headR, Dlist **tailR)
+int multiplication(Dlist **head1, Dlist **tail1,
+				   Dlist **head2, Dlist **tail2,
+				   Dlist **headR, Dlist **tailR)
 {
-    if (tail1 == NULL || tail2 == NULL ||
-        headR == NULL || tailR == NULL)
-    {
-        return failure;
-    }
+	Dlist *ptr2 = *tail2;
 
-    int count1 = 0;
-    int count2 = 0;
+	int zeros = 0;
 
-    Dlist *temp;
+	while (ptr2)
+	{
+		Dlist *tempH = NULL;
+		Dlist *tempT = NULL;
 
-    // Count digits in the first number
-    temp = tail1;
-    while (temp != NULL)
-    {
-        count1++;
-        temp = temp->prev;
-    }
+		Dlist *ptr1 = *tail1;
+		int carry = 0;
 
-    // Count digits in the second number
-    temp = tail2;
-    while (temp != NULL)
-    {
-        count2++;
-        temp = temp->prev;
-    }
+		while (ptr1)
+		{
+			int prod = ptr1->data * ptr2->data + carry;
 
-    // Create count1 + count2 zero nodes
-    for (int i = 0; i < count1 + count2; i++)
-    {
-        if (insert_last(headR, tailR, 0) == failure)
-        {
-            return failure;
-        }
-    }
+			carry = prod / 10;
 
-    Dlist *temp1 = tail1;
-    Dlist *res1 = *tailR;
+			insert_first(&tempH, &tempT, prod % 10);
 
-    while (temp1 != NULL)
-    {
-        Dlist *temp2 = tail2;
-        Dlist *res2 = res1;
+			ptr1 = ptr1->prev;
+		}
 
-        int carry = 0;
+		if (carry)
+			insert_first(&tempH, &tempT, carry);
 
-        while (temp2 != NULL)
-        {
-            int product = temp1->data * temp2->data + res2->data + carry;
+		/* append zeros */
+		for (int i = 0; i < zeros; i++)
+		{
+			insert_last(&tempH, &tempT, 0);
+		}
 
-            res2->data = product % 10;
-            carry = product / 10;
+		/* first partial product */
+		if (*headR == NULL)
+		{
+			*headR = tempH;
+			*tailR = tempT;
+		}
+		else
+		{
+			Dlist *newH = NULL;
+			Dlist *newT = NULL;
 
-            temp2 = temp2->prev;
-            res2 = res2->prev;
-        }
+			addition(headR, tailR,
+					 &tempH, &tempT,
+					 &newH, &newT);
 
-        // Add any remaining carry
-        while (carry != 0 && res2 != NULL)
-        {
-            int sum = res2->data + carry;
+			*headR = newH;
+			*tailR = newT;
+		}
 
-            res2->data = sum % 10;
-            carry = sum / 10;
+		zeros++;
+		ptr2 = ptr2->prev;
+	}
 
-            res2 = res2->prev;
-        }
-
-        temp1 = temp1->prev;
-        res1 = res1->prev;
-    }
-
-    // Remove leading zeros
-    while (*headR != *tailR && (*headR)->data == 0)
-    {
-        Dlist *del = *headR;
-
-        *headR = (*headR)->next;
-        (*headR)->prev = NULL;
-
-        free(del);
-    }
-
-    return success;
+	return SUCCESS;
 }

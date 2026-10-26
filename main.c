@@ -1,190 +1,216 @@
+// APC PROJECT
+// Name = HARSHA G
+// 260151_015
+// DATE = 
+
 #include <stdio.h>
 #include "apc.h"
 
 int main(int argc, char *argv[])
 {
-    Dlist *head1 = NULL;
-    Dlist *tail1 = NULL;
+	if (argc != 4)
+	{
+		printf("Usage: ./a.out <operand1> <operator> <operand2>\n");
+		return FAILURE;
+	}
 
-    Dlist *head2 = NULL;
-    Dlist *tail2 = NULL;
+	if (validate_operand(argv[1]) == FAILURE ||
+		validate_operand(argv[3]) == FAILURE)
+	{
+		printf("Invalid operand\n");
+		return FAILURE;
+	}
 
-    Dlist *headR = NULL;
-    Dlist *tailR = NULL;
+	Dlist *head1 = NULL, *tail1 = NULL;
+	Dlist *head2 = NULL, *tail2 = NULL;
+	Dlist *headR = NULL, *tailR = NULL;
 
-    if(argc != 4)
-    {
-        printf("Usage: ./a.out operand1 operator operand2\n");
-        return 0;
-    }
+	int sign1;
+	int sign2;
 
-    if(check_operands(argv[1]) == failure)
-    {
-        printf("Enter valid number for operand 1\n");
-        return 0;
-    }
+	char operator = argv[2][0];
 
-    if(check_operands(argv[3]) == failure)
-    {
-        printf("Enter valid number for operand 2\n");
-        return 0;
-    }
+	if (operator != '+' &&
+		operator != '-' &&
+		operator != 'x' &&
+		operator != '*' &&
+		operator != '/')
+	{
+		printf("Invalid operator\n");
+		return FAILURE;
+	}
 
-    if(check_operator(argv[2]) == failure)
-    {
-        printf("Enter valid operator (+, -, x, /)\n");
-        return 0;
-    }
+	digit_to_list(&head1, &tail1,
+				  &head2, &tail2,
+				  argv,
+				  &sign1, &sign2);
 
-    int sign1 = 1;
-    int sign2 = 1;
+	switch (operator)
+	{
+	case '+':
+	{
+		printf("Addition Result = ");
 
-    if(argv[1][0] == '-')
-        sign1 = -1;
+		/*
+		 * Same signs
+		 */
+		if (sign1 == sign2)
+		{
+			addition(&head1, &tail1,
+					 &head2, &tail2,
+					 &headR, &tailR);
 
-    if(argv[3][0] == '-')
-        sign2 = -1;
+			if (sign1 == -1)
+				printf("-");
 
-    int start1 = (argv[1][0] == '-') ? 1 : 0;
-    int start2 = (argv[3][0] == '-') ? 1 : 0;
+			print_list(headR);
+		}
 
-    for(int i = start1; argv[1][i]; i++)
-    {
-        if(insert_last(&head1, &tail1, argv[1][i] - '0') == failure)
-            return 0;
-    }
+		/*
+		 * Different signs
+		 */
+		else
+		{
+			int result = compare_list(head1, head2);
 
-    for(int i = start2; argv[3][i]; i++)
-    {
-        if(insert_last(&head2, &tail2, argv[3][i] - '0') == failure)
-            return 0;
-    }
+			if (result == 0)
+			{
+				printf("0\n");
+			}
+			else if (result > 0)
+			{
+				subtraction(&head1, &tail1,
+							&head2, &tail2,
+							&headR, &tailR);
 
-    char oper = argv[2][0];
-    int result_sign = 1;
-    int cmp;
+				if (sign1 == -1)
+					printf("-");
 
-    switch(oper)
-    {
-        case '+':
-            if(sign1 == sign2)
-            {
-                if(addition(tail1, tail2, &headR, &tailR) == failure)
-                {
-                    printf("Addition failed\n");
-                    return 0;
-                }
+				print_list(headR);
+			}
+			else
+			{
+				subtraction(&head2, &tail2,
+							&head1, &tail1,
+							&headR, &tailR);
 
-                result_sign = sign1;
-            }
-            else
-            {
-                cmp = compare_lists(head1, head2);
+				if (sign2 == -1)
+					printf("-");
 
-                if(cmp == 0)
-                {
-                    insert_first(&headR, &tailR, 0);
-                    result_sign = 1;
-                }
-                else if(cmp > 0)
-                {
-                    if(subs(tail1, tail2, &headR, &tailR) == failure)
-                    {
-                        printf("Subtraction failed\n");
-                        return 0;
-                    }
+				print_list(headR);
+			}
+		}
 
-                    result_sign = sign1;
-                }
-                else
-                {
-                    if(subs(tail2, tail1, &headR, &tailR) == failure)
-                    {
-                        printf("Subtraction failed\n");
-                        return 0;
-                    }
+		break;
+	}
 
-                    result_sign = sign2;
-                }
-            }
-            break;
+	case '-':
+	{
+		printf("Subtraction Result = ");
 
-        case '-':
-            sign2 = -sign2;
+		/*
+		 * a - b
+		 *
+		 * If signs are different:
+		 *
+		 * (+a) - (-b) = a + b
+		 * (-a) - (+b) = -(a + b)
+		 */
 
-            if(sign1 == sign2)
-            {
-                if(addition(tail1, tail2, &headR, &tailR) == failure)
-                {
-                    printf("Addition failed\n");
-                    return 0;
-                }
+		if (sign1 != sign2)
+		{
+			addition(&head1, &tail1,
+					 &head2, &tail2,
+					 &headR, &tailR);
 
-                result_sign = sign1;
-            }
-            else
-            {
-                cmp = compare_lists(head1, head2);
+			if (sign1 == -1)
+				printf("-");
 
-                if(cmp == 0)
-                {
-                    insert_first(&headR, &tailR, 0);
-                    result_sign = 1;
-                }
-                else if(cmp > 0)
-                {
-                    if(subs(tail1, tail2, &headR, &tailR) == failure)
-                    {
-                        printf("Subtraction failed\n");
-                        return 0;
-                    }
+			print_list(headR);
+		}
 
-                    result_sign = sign1;
-                }
-                else
-                {
-                    if(subs(tail2, tail1, &headR, &tailR) == failure)
-                    {
-                        printf("Subtraction failed\n");
-                        return 0;
-                    }
+		/*
+		 * Same signs
+		 */
+		else
+		{
+			int result = compare_list(head1, head2);
 
-                    result_sign = sign2;
-                }
-            }
-            break;
+			if (result == 0)
+			{
+				printf("0\n");
+			}
+			else if (result > 0)
+			{
+				subtraction(&head1, &tail1,
+							&head2, &tail2,
+							&headR, &tailR);
 
-        case 'x':
-        case 'X':
-            if((multiplication(tail1,tail2,&headR,&tailR)==failure))
-            {
-                printf("multiplication failed!\n");
-                return 0;
-            }
-            break;
-            
-        case '/':
-            
-            if((division(head1, head2, &headR, &tailR)==failure))
-            {
-                printf("Divition failed!\n");
-                return 0;
-            }
-            break;
+				if (sign1 == 1)
+					print_list(headR);
+				else
+				{
+					printf("-");
+					print_list(headR);
+				}
+			}
+			else
+			{
+				subtraction(&head2, &tail2,
+							&head1, &tail1,
+							&headR, &tailR);
 
-        default:
-            printf("Invalid operator\n");
-            return 0;
-    }
+				if (sign1 == 1)
+				{
+					printf("-");
+					print_list(headR);
+				}
+				else
+				{
+					print_list(headR);
+				}
+			}
+		}
 
-    if(result_sign == -1)
-    {
-        // Avoid printing negative zero.
-        if(!(headR->data == 0 && headR->next == NULL))
-            printf("-");
-    }
+		break;
+	}
 
-    print_list(headR);
+	case '*':
+	case 'x':
+	{
+		printf("Multiplication Result = ");
 
-    return 0;
+		multiplication(&head1, &tail1,
+					   &head2, &tail2,
+					   &headR, &tailR);
+
+		if (sign1 != sign2)
+			printf("-");
+
+		print_list(headR);
+
+		break;
+	}
+
+	case '/':
+	{
+		printf("Division Result = ");
+
+		division(&head1, &tail1,
+				 &head2, &tail2,
+				 &headR, &tailR);
+
+		if (sign1 != sign2)
+			printf("-");
+
+		print_list(headR);
+
+		break;
+	}
+
+	default:
+		printf("Invalid operator\n");
+	}
+
+	return SUCCESS;
 }
